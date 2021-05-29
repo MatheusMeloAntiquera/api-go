@@ -1,10 +1,11 @@
-FROM golang:1.16
+FROM golang:latest
 
-WORKDIR /go/src/api-go
+WORKDIR /go/api-go
 COPY . .
 
-RUN go get -d -v ./...
-RUN go install -v ./...
+# RUN echo "teste"
 
+# RUN go get -d -v ./...
+# RUN go install -v ./...
 
-EXPOSE 8080
+# CMD ["echo teste"]

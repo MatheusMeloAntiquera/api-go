@@ -1,9 +1,10 @@
 version: '3.8'
 services:
   api-go:
+    tty: true
     build: .
     volumes:
-     - .:/go/src/api-go
+     - .:/go/api-go/
     links:
      - go-mysql
     networks: 
@@ -15,13 +16,14 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
+     - MYSQL_ALLOW_EMPTY_PASSWORD=yes
      - MYSQL_ROOT_PASSWORD=
-     - MYSQL_DATABASE=
+     - MYSQL_DATABASE=api-go
     ports:
      - 3306:3306
     networks: 
      - api-go-network
-
+  
 networks:
   api-go-network:
     driver: "bridge"
