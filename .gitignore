@@ -1,1 +1,3 @@
-database/
+/docker/**/database/ 
+tmp/
+.env

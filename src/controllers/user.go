@@ -1,16 +1,14 @@
 package controllers
 
 import (
+	"github.com/MatheusMeloAntiquera/api-go/src/database"
 	"github.com/MatheusMeloAntiquera/api-go/src/models"
 	"github.com/gin-gonic/gin"
 )
 
-var users []models.User
-var user models.User
-
 func UserIndex(context *gin.Context) {
-
-	db.Find(&users)
+	var users []models.User
+	database.DbCon.Find(&users)
 	context.JSON(200, gin.H{
 		"success": true,
 		"data":    users,
@@ -18,16 +16,19 @@ func UserIndex(context *gin.Context) {
 }
 
 func UserShow(context *gin.Context) {
-	db.First(&user, context.Param("id"))
-	context.JSON(200, gin.H{
-		"success": true,
-		"data":    user,
-	})
+	var user models.User
+	database.DbCon.First(&user, context.Param("id"))
+	if checkUserExist(user, context) {
+		context.JSON(200, gin.H{
+			"success": true,
+			"data":    user,
+		})
+	}
 }
 
 func UserCreate(context *gin.Context) {
 	user := models.User{Name: context.PostForm("name")}
-	db.Create(&user)
+	database.DbCon.Create(&user)
 	context.JSON(200, gin.H{
 		"success": true,
 		"data":    user,
@@ -35,19 +36,39 @@ func UserCreate(context *gin.Context) {
 }
 
 func UserUpdate(context *gin.Context) {
-	db.First(&user, context.Param("id"))
-	user.Name = context.PostForm("name")
-	db.Save(&user)
-	context.JSON(200, gin.H{
-		"success": true,
-		"data":    user,
-	})
+	var user models.User
+	database.DbCon.First(&user, context.Param("id"))
+	if checkUserExist(user, context) {
+		user.Name = context.PostForm("name")
+		database.DbCon.Save(&user)
+		context.JSON(200, gin.H{
+			"success": true,
+			"data":    user,
+		})
+	}
 }
 
 func UserDelete(context *gin.Context) {
-	db.First(&user, context.Param("id"))
-	db.Delete(&user)
-	context.JSON(200, gin.H{
-		"success": true,
-	})
+	var user models.User
+	database.DbCon.First(&user, context.Param("id"))
+
+	if checkUserExist(user, context) {
+		database.DbCon.Delete(&user)
+		context.JSON(200, gin.H{
+			"success": true,
+			"message": "User deleted successfully",
+		})
+	}
+}
+
+func checkUserExist(user models.User, context *gin.Context) bool {
+	if (user == models.User{}) {
+		context.JSON(200, gin.H{
+			"success": false,
+			"message": "User not found",
+		})
+
+		return false
+	}
+	return true
 }
