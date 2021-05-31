@@ -1,6 +1,10 @@
 package main
 
 import (
+	"log"
+
+	"github.com/MatheusMeloAntiquera/api-go/src/database"
+	"github.com/MatheusMeloAntiquera/api-go/src/helpers"
 	Router "github.com/MatheusMeloAntiquera/api-go/src/routes"
 )
 
@@ -10,5 +14,8 @@ type User struct {
 }
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	helpers.LoadDotEnv()
+	database.ConnectToDatabase()
 	Router.Run()
 }
